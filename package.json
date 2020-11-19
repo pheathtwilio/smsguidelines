@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/pheathtwilio/smsguidelines/issues"
   },
-  "homepage": "https://github.com/pheathtwilio/smsguidelines#readme"
+  "homepage": "https://github.com/pheathtwilio/smsguidelines#readme",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "jsdom": "^16.4.0"
+  }
 }
