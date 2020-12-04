@@ -8,7 +8,9 @@ const MAIN_URL = "https://www.twilio.com/guidelines/sms"
 const UNORDERED_LIST = "body > main > div > section:nth-child(4) > div > div > ul"
 const COUNTRY_SUMMARY_TABLE = "body > main > div > section.section.sms-section.pt-5 > div:nth-child(1) > div:nth-child(1) > table > tbody"
 const GUIDELINES_TABLE = "body > main > div > section.section.sms-section.pt-5 > div:nth-child(1) > div:nth-child(2) > table > tbody"
+const PHONE_NUMBERS_TABLE = ""
 
+let countries = []
 
 const stripTags = (dirtyHTML) => {
   return dirtyHTML.replace( /(<([^>]+)>)/ig, '')
@@ -24,7 +26,6 @@ const getCountrySummary = async (country) => {
     const dom = new JSDOM(data);
     const { document } = dom.window;
     const countrySummaryTable = document.querySelector(COUNTRY_SUMMARY_TABLE)
-
 
     if(countrySummaryTable.hasChildNodes){
       countrySummaryTable.childNodes.forEach((countrySummary) => {
@@ -89,7 +90,10 @@ const getPhoneNumbers = async (country) => {
 
     try {
 
-
+      const { data } = await axios.get(TWILIO_HOME + country.link)
+      const dom = new JSDOM(data);
+      const { document } = dom.window;
+      const phoneNumbersTable = document.querySelector(GUIDELINES_TABLE)
 
     } catch (e) {
       throw (e)
@@ -98,7 +102,6 @@ const getPhoneNumbers = async (country) => {
 
 
 }
-
 
 const getGrid = async () => {
     const { data } = await axios.get(MAIN_URL)
@@ -128,29 +131,30 @@ const getGrid = async () => {
         // get all country summaries
         getCountrySummary(country).then((summaries) => {
           country = {name: country.name, link: country.link, summaries: summaries}
+
+          // get all guidelines
+          getGuidelines(country).then((guidelines) => {
+            country = {name: country.name, link: country.link, summaries: country.summaries, guidelines: guidelines}
+
+            console.log(country)
+            // get all phone numbers and sender id's
+
+            // get HTML output
+
+          })
+          .catch((e) => {
+            console.log(e)
+          })
+
         })
         .catch((e) => {
           console.log(e)
         })
-
-        // get all guidelines
-        getGuidelines(country).then((guidelines) => {
-          country = {name: country.name, link: country.link, summaries: country.summaries, guidelines: guidelines}
-        })
-        .catch((e) => {
-          console.log(e)
-        })
-
-        // get all phone numbers and sender id's
         
       })
 
-      
-
-    
-
-
       return countries
+
     } catch (e) {
       throw (e)
     }
@@ -159,20 +163,4 @@ const getGrid = async () => {
 getGrid().then((countries) => {
   console.log("lets go")
 })
-
-
-    // // populate guidelines
-    // countries.forEach((country) => {
-  
-    //   // 
-  
-  
-    //   country = {name: country.name, link: country.link, twoway: "no"}
-
-  
-
-    //   console.log(country)
-    // })
-
-
-
+.catch()
