@@ -10,7 +10,7 @@ const COUNTRY_SUMMARY_TABLE = "body > main > div > section.section.sms-section.p
 const GUIDELINES_TABLE = "body > main > div > section.section.sms-section.pt-5 > div:nth-child(1) > div:nth-child(2) > table > tbody"
 const PHONE_NUMBERS_TABLE = ""
 
-let countries = []
+let htmlString = ""
 
 const stripTags = (dirtyHTML) => {
   return dirtyHTML.replace( /(<([^>]+)>)/ig, '')
@@ -136,10 +136,30 @@ const getGrid = async () => {
           getGuidelines(country).then((guidelines) => {
             country = {name: country.name, link: country.link, summaries: country.summaries, guidelines: guidelines}
 
-            console.log(country)
+            htmlString += country.name + "<br/>" + country.link + "<br/>"
+            
+            country.summaries.forEach((summary) => {
+              htmlString += summary.heading + "<br/>" + summary.summary + "<br/>"
+            })
+
+            country.guidelines.forEach((guideline) => {
+              htmlString += guideline.heading + "<br/>" + guideline.summary + "<br/>"
+            })
+
+            htmlString += "<br/><br/>"
+
+            // console.log(country)
             // get all phone numbers and sender id's
 
             // get HTML output
+            var fs = require('fs');
+
+            var fileName = './index.html';
+            var stream = fs.createWriteStream(fileName);
+
+            stream.once('open', function(fd) {
+              stream.end(htmlString);
+            });
 
           })
           .catch((e) => {
